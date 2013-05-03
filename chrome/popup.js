@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function loginRequest(email, password, callback1, callback2) {
-    if (!callback2) {callback2 = callback1}
+    if (!callback2) {callback2 = callback1;}
     stateChangeFunction = function() {
         if (this.readyState == 4) {
             if (this.status == 202) {
@@ -76,12 +76,18 @@ function logoutFormSubmit() {
 
 function handleLoginResponse(data) {
     if (!data || data.length == 0) {showLoggedOut();}
-    else {showLoggedIn(data);}
+    else {
+        setUserInfo(data);
+        showLoggedIn(data);
+    }
 }
 
 function handleRegisterResponse(data) {
     if (!data || data.length == 0) {showLoggedOut();} //WithErrors
-    else {showLoggedIn(data);}
+    else {
+        showLoggedIn(data);
+        setUserInfo(data);
+    }
 }
 
 function handleLogoutResponse() {
@@ -117,6 +123,7 @@ function showUsername(firstName, lastName) {
 }
 
 function showBindings(bindings) {
+    console.log(bindings);
     var rows = document.getElementById('mapsUGC');
     for (var i = 1; i < maxBindings+1; i++) {
         var row = document.createElement('div'); //the overarching row
@@ -151,6 +158,11 @@ function showLoggedOut() {
     document.querySelector('#registerSubmit').addEventListener('click', registerFormSubmit);
     changeDisplay('loggedOut', 'block');
     changeDisplay('loggedIn', 'none');
+}
+
+function setUserInfo(response) {
+    bgp.setNameToStorage(response.first, response.last);
+    bgp.setBindingsToStorage(response.bindings);
 }
 
 function showLoggedIn(response) {
@@ -188,11 +200,11 @@ function dbChangeBinding(binding, mapping) {
 }
 
 function loggedInCheck(inCallback, outCallback) {
-    //Change this to utilize local session / cookies
-    return loginRequest("", "", inCallback, outCallback);
+    bgp.getStoredUser(inCallback, outCallback);
 }
 
 function clearData() {
     var rows = document.getElementById('mapsUGC');
     rows.innerHTML = "";
+    bgp.clearUserData();
 }

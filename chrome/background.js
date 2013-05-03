@@ -30,6 +30,17 @@ function makeSendText(d) {
 function dbChangeBinding(binding, mapping) {
     var sendText = makeSendText({'binding':binding, 'mapping':encodeURIComponent(mapping)});
     var xhr = newXMLRequest("POST", domainName + "/xhr_bindings", sendText);
+    chrome.storage.sync.get(null, function(response) {
+        if ('bindings' in response) {
+            console.log('got bindings');
+            bindings = response.bindings;
+            bindings[binding] = mapping;
+            setBindingsToStorage(bindings);
+        }
+        else {
+            console.log('bindings not in response');
+        }
+    });
 }
 
 function logNote(text, title, href, keyCode) {
@@ -46,5 +57,31 @@ function logNote(text, title, href, keyCode) {
 
 function flashIcon() {
     chrome.browserAction.setIcon({path:"k_16_flash.gif"});
-    setTimeout(function(){chrome.browserAction.setIcon({path:"k_icon16.gif"})}, 400);
+    setTimeout(function(){chrome.browserAction.setIcon({path:"k_icon16.gif"})}, 200);
+}
+
+function setNameToStorage(first, last) {
+    chrome.storage.sync.set({'first':first, 'last':last}, function() {
+        console.log("saved named to storage");
+//         message("this would return a message back to popup.js");
+    });
+}
+
+function setBindingsToStorage(bindings) {
+    chrome.storage.sync.set({'bindings':bindings}, function() {
+        console.log("saved bindings to storage " + bindings);
+    });
+}
+
+function clearUserData() {
+    chrome.storage.sync.clear(function() {
+        console.log("cleared data in storage");
+    });
+}
+
+function getStoredUser(inCallback, outCallback) {
+    chrome.storage.sync.get(null, function(response) {
+        if ('bindings' in response && 'first' in response && 'last' in response) {console.log("going to showLoggedIn"); inCallback(response);}
+        else {console.log("going to showLoggedOut"); outCallback();}
+    });
 }
