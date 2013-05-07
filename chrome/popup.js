@@ -123,7 +123,6 @@ function showUsername(firstName, lastName) {
 }
 
 function showBindings(bindings) {
-    console.log(bindings);
     var rows = document.getElementById('mapsUGC');
     for (var i = 1; i < maxBindings+1; i++) {
         var row = document.createElement('div'); //the overarching row

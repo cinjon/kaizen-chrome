@@ -32,13 +32,9 @@ function dbChangeBinding(binding, mapping) {
     var xhr = newXMLRequest("POST", domainName + "/xhr_bindings", sendText);
     chrome.storage.sync.get(null, function(response) {
         if ('bindings' in response) {
-            console.log('got bindings');
             bindings = response.bindings;
             bindings[binding] = mapping;
             setBindingsToStorage(bindings);
-        }
-        else {
-            console.log('bindings not in response');
         }
     });
 }
@@ -61,27 +57,20 @@ function flashIcon() {
 }
 
 function setNameToStorage(first, last) {
-    chrome.storage.sync.set({'first':first, 'last':last}, function() {
-        console.log("saved named to storage");
-//         message("this would return a message back to popup.js");
-    });
+    chrome.storage.sync.set({'first':first, 'last':last});
 }
 
 function setBindingsToStorage(bindings) {
-    chrome.storage.sync.set({'bindings':bindings}, function() {
-        console.log("saved bindings to storage " + bindings);
-    });
+    chrome.storage.sync.set({'bindings':bindings});
 }
 
 function clearUserData() {
-    chrome.storage.sync.clear(function() {
-        console.log("cleared data in storage");
-    });
+    chrome.storage.sync.clear();
 }
 
 function getStoredUser(inCallback, outCallback) {
     chrome.storage.sync.get(null, function(response) {
-        if ('bindings' in response && 'first' in response && 'last' in response) {console.log("going to showLoggedIn"); inCallback(response);}
-        else {console.log("going to showLoggedOut"); outCallback();}
+        if ('bindings' in response && 'first' in response && 'last' in response) {inCallback(response);}
+        else {outCallback();}
     });
 }
