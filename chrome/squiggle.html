@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <link href="bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="jquery-1.9.1.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaizen</title>
+    <style>
+      body {
+        width:250px;
+        height:100px;
+      }
+
+      #container {
+        width:inherit;
+        height:inherit;
+        margin-left:20px;
+        margin-top:20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="container">
+      <div class="row"><input id="search" type="text" tabindex="1" placeholder="Enter Map"></div>
+      <div class="row"><input id="note" type="text" tabindex="2" placeholder="Optional Note"></div>
+      <div class="row">
+        <div class="span5 offset1"><input id="save" type="button" tabindex="3" value="Save"></div>
+        <div class="span5"><input id="cancel" type="button" tabindex="4" value="Cancel"></div>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <script src="squiggle.js"></script>
+  </footer>
+</html>
+
+

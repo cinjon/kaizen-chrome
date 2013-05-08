@@ -1,8 +1,12 @@
 var domainName = 'http://www.seekaizen.com';
+var maxBindings = 2;
+var searchNote = null;
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.method == "logNote") {
         logNote(request.text, request.title, request.href, request.keyCode);
+    } else if (request.method == "showSearch") {
+        showSearch(request.text, request.title, request.href, request.keyCode);
     }
 });
 
@@ -49,6 +53,37 @@ function logNote(text, title, href, keyCode) {
                                  'keyCode':keyCode});
     var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
                             sendText, stateChangeFunction);
+}
+
+function showSearch(text, title, href, keyCode) {
+    var w = 250;
+    var h = 100;
+    var left = screen.width/2 - w/2;
+    var top = screen.height/2 - h/2;
+    searchNote = {'text':text, 'title':title, 'href':href, 'keyCode':keyCode};
+    chrome.windows.create({'url':'squiggle.html', 'type':'popup',
+                           'height':h, 'width':w, 'focused':true,
+                           'left':left, 'top':top});
+}
+
+function logSearchNote(mapping, userGeneratedNote) {
+    var stateChangeFunction = function() {
+        if (this.readyState == 4) {
+            if (this.status == 201) {flashIcon();}
+        }
+    }
+    if (searchNote) {
+        var sendText = makeSendText({'text':searchNote['text'],
+                                    'title':searchNote['title'],
+                                    'href':searchNote['href'],
+                                    'mapping':mapping,
+                                    'ugn':userGeneratedNote});
+//         var xhr = newXMLRequest("POST", domainName + "/xhr_searchnotes",
+//                                 sendText, stateChangeFunction);
+        console.log('in logsearchnote: ' + sendText);
+    } else {
+        console.log('no searchNote in logSearchNote');
+    }
 }
 
 function flashIcon() {
