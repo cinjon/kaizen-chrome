@@ -1,6 +1,6 @@
-var maxBindings = 5;
 var bgp = chrome.extension.getBackgroundPage();
 var domainName = bgp.domainName;
+var maxBindings = bgp.maxBindings;
 
 document.addEventListener('DOMContentLoaded', function () {
     loggedInCheck(showLoggedIn, showLoggedOut);
