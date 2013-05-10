@@ -1,4 +1,5 @@
-var domainName = 'http://www.seekaizen.com';
+// var domainName = 'http://www.seekaizen.com';
+var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
 
@@ -35,11 +36,8 @@ function dbChangeBinding(binding, mapping) {
     var sendText = makeSendText({'binding':binding, 'mapping':encodeURIComponent(mapping)});
     var xhr = newXMLRequest("POST", domainName + "/xhr_bindings", sendText);
     chrome.storage.sync.get(null, function(response) {
-        if ('bindings' in response) {
-            bindings = response.bindings;
-            bindings[binding] = mapping;
-            setBindingsToStorage(bindings);
-        }
+        key = 'binding_' + binding;
+        setBindingToStorage(key, mapping);
     });
 }
 
@@ -55,7 +53,7 @@ function logNote(text, title, href, keyCode) {
 }
 
 function showSearch(text, title, href) {
-    var w = 250;
+    var w = 372;
     var h = 100;
     var left = screen.width - w - 20;
     var top = 0;
@@ -95,8 +93,8 @@ function setNameToStorage(first, last) {
     chrome.storage.sync.set({'first':first, 'last':last});
 }
 
-function setBindingsToStorage(bindings) {
-    chrome.storage.sync.set({'bindings':bindings});
+function setBindingsToStorage(key, mapping) {
+    chrome.storage.sync.set({key:mapping});
 }
 
 function clearUserData() {
@@ -105,7 +103,7 @@ function clearUserData() {
 
 function getStoredUser(inCallback, outCallback) {
     chrome.storage.sync.get(null, function(response) {
-        if ('bindings' in response && 'first' in response && 'last' in response) {inCallback(response);}
+        if ('first' in response && 'last' in response) {inCallback(response);}
         else {outCallback();}
     });
 }
