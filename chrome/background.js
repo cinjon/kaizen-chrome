@@ -6,7 +6,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.method == "logNote") {
         logNote(request.text, request.title, request.href, request.keyCode);
     } else if (request.method == "showSearch") {
-        showSearch(request.text, request.title, request.href, request.keyCode);
+        showSearch(request.text, request.title, request.href);
     }
 });
 
@@ -49,18 +49,18 @@ function logNote(text, title, href, keyCode) {
             if (this.status == 201) {flashIcon();}
         }
     }
-    var sendText = makeSendText({'text':text, 'title':title, 'href':href,
-                                 'keyCode':keyCode});
+    var sendText = makeSendText({'text':text, 'title':title, 'href':href, 'keyCode':keyCode});
     var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
                             sendText, stateChangeFunction);
 }
 
-function showSearch(text, title, href, keyCode) {
+function showSearch(text, title, href) {
     var w = 250;
     var h = 100;
-    var left = screen.width/2 - w/2;
-    var top = screen.height/2 - h/2;
-    searchNote = {'text':text, 'title':title, 'href':href, 'keyCode':keyCode};
+    var left = screen.width - w - 20;
+    var top = 0;
+    searchNote = {'text':text, 'title':title, 'href':href};
+    console.log('search note: ' + searchNote);
     chrome.windows.create({'url':'squiggle.html', 'type':'popup',
                            'height':h, 'width':w, 'focused':true,
                            'left':left, 'top':top});
@@ -78,7 +78,7 @@ function logSearchNote(mapping, userGeneratedNote) {
                                     'href':searchNote['href'],
                                     'mapping':mapping,
                                     'ugn':userGeneratedNote});
-//         var xhr = newXMLRequest("POST", domainName + "/xhr_searchnotes",
+//         var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
 //                                 sendText, stateChangeFunction);
         console.log('in logsearchnote: ' + sendText);
     } else {
