@@ -161,14 +161,24 @@ function showLoggedOut() {
 
 function setUserInfo(response) {
     bgp.setNameToStorage(response.first, response.last);
-    bgp.setBindingsToStorage(response.bindings);
+    for (key in response.bindings) {
+        console.log('setUserInfo: ' + key);
+        bgp.setBindingsToStorage(key, response.bindings[key]);
+    }
 }
 
 function showLoggedIn(response) {
     changeDisplay('loggedOut', 'none');
     changeDisplay('loggedIn', 'block');
     showUsername(response.first, response.last);
-    showBindings(response.bindings);
+    bindings = {};
+    for (var i = 1; i < maxBindings+1; i++) {
+        key = 'binding_' + i;
+        if (key in response) {
+            bindings[i] = response[key];
+        }
+    }
+    showBindings(response);
     document.querySelector('#mapChangesSubmit').addEventListener('click', mapChangesHandler);
     document.querySelector('#logoutSubmit').addEventListener('click', logoutFormSubmit);
 }
