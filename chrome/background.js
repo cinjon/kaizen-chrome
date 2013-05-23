@@ -1,5 +1,4 @@
-// var domainName = 'http://www.seekaizen.com';
-var domainName = 'http://0.0.0.0:5000';
+var domainName = 'http://www.seekaizen.com';
 var maxBindings = 2;
 var searchNote = null;
 

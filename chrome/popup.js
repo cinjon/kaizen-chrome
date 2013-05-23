@@ -1,6 +1,7 @@
 var bgp = chrome.extension.getBackgroundPage();
 var domainName = bgp.domainName;
 var maxBindings = bgp.maxBindings;
+var enableRegister = false;
 
 document.addEventListener('DOMContentLoaded', function () {
     loggedInCheck(showLoggedIn, showLoggedOut);
@@ -17,21 +18,23 @@ function loginRequest(email, password, callback1, callback2) {
             }
         }
     }
-    bgp.newXMLRequest("POST", domainName + "/login",
+    bgp.newXMLRequest("POST", domainName + "/ext-login",
                       "email=" + email + "&password=" + password,
                       stateChangeFunction);
 }
 
 function registerRequest(email, password, first, last, callback) {
+  if (enableRegister){
     stateChangeFunction = function() {
         if (this.readyState == 4) {
             if (this.status == 202) {callback(JSON.parse(this.responseText));}
             else {console.log('failed to register');} //TODO
         }
     }
-    bgp.newXMLRequest("POST", domainName + "/register",
+    bgp.newXMLRequest("POST", domainName + "/ext-register",
                       "email=" + email + "&password=" + password + "&first=" + first + "&last=" + last,
                       stateChangeFunction);
+  }
 }
 
 function logoutRequest(callback) {
@@ -42,8 +45,15 @@ function logoutRequest(callback) {
             }
         }
     }
-    bgp.newXMLRequest("GET", domainName + "/logout",
+    bgp.newXMLRequest("GET", domainName + "/ext-logout",
                       "", stateChangeFunction);
+}
+
+function registerLinkClick() {
+  chrome.tabs.create({
+        url: domainName + '/register'
+    });
+  return false;
 }
 
 function registerFormSubmit() {
@@ -155,6 +165,7 @@ function showBindings(bindings) {
 function showLoggedOut() {
     document.querySelector('#loginSubmit').addEventListener('click', loginFormSubmit);
     document.querySelector('#registerSubmit').addEventListener('click', registerFormSubmit);
+    document.querySelector('#registerLink').addEventListener('click', registerLinkClick);
     changeDisplay('loggedOut', 'block');
     changeDisplay('loggedIn', 'none');
 }
