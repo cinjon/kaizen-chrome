@@ -87,8 +87,8 @@ function logoutFormSubmit() {
 function handleLoginResponse(data) {
     if (!data || data.length == 0) {showLoggedOut();}
     else {
-        setUserInfo(data);
         showLoggedIn(data);
+        setUserInfo(data);
     }
 }
 
@@ -126,8 +126,7 @@ function checkFirstLast(first, last) {
     return true;
 }
 
-function showUsername(firstName, lastName) {
-    var name = firstName + ' ' + lastName;
+function showUsername(name) {
     var userName = document.getElementById('userName');
     userName.innerHTML = '<a href="' + domainName + '/me"><b>' + name + '</b></a>';
 }
@@ -171,25 +170,25 @@ function showLoggedOut() {
 }
 
 function setUserInfo(response) {
-    bgp.setNameToStorage(response.first, response.last);
-    for (key in response.bindings) {
-        console.log('setUserInfo: ' + key);
-        bgp.setBindingsToStorage(key, response.bindings[key]);
+    bgp.setNameToStorage(response.name);
+    for (binding in response.bindings) {
+        var key = 'binding_' + binding;
+        bgp.setBindingToStorage(key, response.bindings[binding]);
     }
 }
 
 function showLoggedIn(response) {
     changeDisplay('loggedOut', 'none');
     changeDisplay('loggedIn', 'block');
-    showUsername(response.first, response.last);
-    bindings = {};
+    showUsername(response.name);
+    var bindings = {};
     for (var i = 1; i < maxBindings+1; i++) {
         key = 'binding_' + i;
         if (key in response) {
             bindings[i] = response[key];
         }
     }
-    showBindings(response);
+    showBindings(bindings);
     document.querySelector('#mapChangesSubmit').addEventListener('click', mapChangesHandler);
     document.querySelector('#logoutSubmit').addEventListener('click', logoutFormSubmit);
 }

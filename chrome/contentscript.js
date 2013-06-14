@@ -8,7 +8,6 @@ window.addEventListener("keydown", function(event) {
 });
 
 function logNote(keyCode) {
-    console.log('logging note: ' + keyCode);
     //TODO -- send img, smart text search.
     var text = encodeURIComponent(window.getSelection().toString());
     var title = encodeURIComponent(document.title);

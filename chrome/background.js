@@ -1,4 +1,5 @@
-var domainName = 'http://www.seekaizen.com';
+// var domainName = 'http://www.seekaizen.com';
+var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
 
@@ -32,12 +33,16 @@ function makeSendText(d) {
 }
 
 function dbChangeBinding(binding, mapping) {
+    var stateChangeFunction = function() {
+        if (this.readyState == 4) {
+            if (this.status == 201) {
+                key = 'binding_' + binding;
+                setBindingToStorage(key, mapping);
+            }
+        }
+    }
     var sendText = makeSendText({'binding':binding, 'mapping':encodeURIComponent(mapping)});
-    var xhr = newXMLRequest("POST", domainName + "/xhr_bindings", sendText);
-    chrome.storage.sync.get(null, function(response) {
-        key = 'binding_' + binding;
-        setBindingToStorage(key, mapping);
-    });
+    var xhr = newXMLRequest("POST", domainName + "/xhr_bindings", sendText, stateChangeFunction);
 }
 
 function logNote(text, title, href, keyCode) {
@@ -88,12 +93,14 @@ function flashIcon() {
     setTimeout(function(){chrome.browserAction.setIcon({path:"k_icon16.gif"})}, 200);
 }
 
-function setNameToStorage(first, last) {
-    chrome.storage.sync.set({'first':first, 'last':last});
+function setNameToStorage(name) {
+    chrome.storage.sync.set({'name':name});
 }
 
-function setBindingsToStorage(key, mapping) {
-    chrome.storage.sync.set({key:mapping});
+function setBindingToStorage(key, mapping) {
+    var store_dict = {}
+    store_dict[key] = mapping;
+    chrome.storage.sync.set(store_dict);
 }
 
 function clearUserData() {
@@ -101,8 +108,9 @@ function clearUserData() {
 }
 
 function getStoredUser(inCallback, outCallback) {
-    chrome.storage.sync.get(null, function(response) {
-        if ('first' in response && 'last' in response) {inCallback(response);}
+//     clearUserData()
+    chrome.storage.sync.get(['name', 'binding_1', 'binding_2'], function(response) {
+        if ('name' in response) {inCallback(response);}
         else {outCallback();}
     });
 }
