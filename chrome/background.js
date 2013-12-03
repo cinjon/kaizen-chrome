@@ -62,7 +62,6 @@ function showSearch(text, title, href) {
     var left = screen.width - w - 20;
     var top = 0;
     searchNote = {'text':text, 'title':title, 'href':href};
-    console.log('search note: ' + searchNote);
     chrome.windows.create({'url':'squiggle.html', 'type':'popup',
                            'height':h, 'width':w, 'focused':true,
                            'left':left, 'top':top});
@@ -80,17 +79,14 @@ function logSearchNote(mapping, userGeneratedNote) {
                                     'href':searchNote['href'],
                                     'mapping':mapping,
                                     'ugn':userGeneratedNote});
-//         var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
-//                                 sendText, stateChangeFunction);
-        console.log('in logsearchnote: ' + sendText);
-    } else {
-        console.log('no searchNote in logSearchNote');
+        var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
+                                sendText, stateChangeFunction);
     }
 }
 
 function flashIcon() {
-    chrome.browserAction.setIcon({path:"k_16_flash.gif"});
-    setTimeout(function(){chrome.browserAction.setIcon({path:"k_icon16.gif"})}, 200);
+    chrome.browserAction.setIcon({path:"kaizenIcon16Flash.png"});
+    setTimeout(function(){chrome.browserAction.setIcon({path:"kaizenIcon16.png"})}, 200);
 }
 
 function setNameToStorage(name) {
