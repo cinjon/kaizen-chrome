@@ -1,5 +1,0 @@
-Kaizen is a tool to make internet research easier. Do you often find yourself with a thousand tabs? Fuck that. Let's slaughter those tabs and move on. With Kaizen, you can save the one silly quote that you wanted from it by just hotkeying ctrl-1 or ctrl-2 to whatever injective topic you choose.
-
-Me? My getup is to have ctrl-2 bound to everything under the hot ass sun and ctrl-1 to the muse of the moment. She's a hot chica too.
-
-More shit coming. Install now and get it while it's hot.
