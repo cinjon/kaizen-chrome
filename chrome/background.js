@@ -37,7 +37,7 @@ function dbChangeBinding(binding, mapping) {
         if (this.readyState == 4) {
             if (this.status == 201) {
                 key = 'binding_' + binding;
-                setBindingToStorage(key, mapping);
+                setToStorage(key, mapping);
             }
         }
     }
@@ -90,7 +90,6 @@ function flashIcon() {
 }
 
 function setToStorage(key, value) {
-    console.log('setting to storage, ' + key + ', ' + value);
     var store_dict = {};
     store_dict[key] = value;
     chrome.storage.sync.set(store_dict);
