@@ -1,13 +1,5 @@
-- Chrome Extension to Grab highlights and hotkey them to a db
-- Site to cleverly display the spread of the db
+Kaizen is a tool to make internet research easier. Do you often find yourself with a thousand tabs? Fuck that. Let's slaughter those tabs and move on. With Kaizen, you can save the one silly quote that you wanted from it by just hotkeying ctrl-1 or ctrl-2 to whatever injective topic you choose.
 
-mind --> Successfully passing back and forth the url, the doc title, the key strokes, the text
+Me? My getup is to have ctrl-2 bound to everything under the hot ass sun and ctrl-1 to the muse of the moment. She's a hot chica too.
 
-SOLVED 1. Make pop up tab editable with five rows:
-
-SOLVED 2. Make it so that when the key is pressed, the timestamp, url, doc title, text, and key are all logged to background page.
-
-3. Log-In on pop-up.
-
-4. Ship info to a REST API to be logged into a DB.
-
+More shit coming. Install now and get it while it's hot.
