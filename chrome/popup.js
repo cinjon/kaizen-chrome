@@ -18,10 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function addClickToVisitSite() {
-};
-
-
 function loginRequest(email, password, callback1, callback2) {
     if (!callback2) {callback2 = callback1;}
     stateChangeFunction = function() {
