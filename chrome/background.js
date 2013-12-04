@@ -3,7 +3,7 @@ var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.method == "logNote") {
         logNote(request.text, request.title, request.href, request.keyCode);
     } else if (request.method == "showSearch") {
@@ -89,13 +89,10 @@ function flashIcon() {
     setTimeout(function(){chrome.browserAction.setIcon({path:"kaizenIcon16.png"})}, 200);
 }
 
-function setNameToStorage(name) {
-    chrome.storage.sync.set({'name':name});
-}
-
-function setBindingToStorage(key, mapping) {
-    var store_dict = {}
-    store_dict[key] = mapping;
+function setToStorage(key, value) {
+    console.log('setting to storage, ' + key + ', ' + value);
+    var store_dict = {};
+    store_dict[key] = value;
     chrome.storage.sync.set(store_dict);
 }
 
@@ -105,7 +102,7 @@ function clearUserData() {
 
 function getStoredUser(inCallback, outCallback) {
 //     clearUserData()
-    chrome.storage.sync.get(['name', 'binding_1', 'binding_2'], function(response) {
+    chrome.storage.sync.get(['name', 'nameRoute', 'binding_1', 'binding_2'], function(response) {
         if ('name' in response) {inCallback(response);}
         else {outCallback();}
     });

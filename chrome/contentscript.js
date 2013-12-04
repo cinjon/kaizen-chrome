@@ -10,13 +10,12 @@ window.addEventListener("keydown", function(event) {
 function logNote(keyCode) {
     //TODO -- send img, smart text search.
     var text = encodeURIComponent(window.getSelection().toString());
-    var title = encodeURIComponent(document.title);
     var href = encodeURIComponent(location.href);
-    chrome.extension.sendMessage({method:"logNote", text:text, title:title,
+    var title = encodeURIComponent(document.title);
+    chrome.runtime.sendMessage({method:"logNote", text:text, title:title,
                                   href:href, keyCode:keyCode});
-
 }
 
 function showSearch() {
-    chrome.extension.sendMessage({method:"showSearch"});
+    chrome.runtime.sendMessage({method:"showSearch"});
 }
