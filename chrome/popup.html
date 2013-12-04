@@ -64,6 +64,12 @@
         width:209px;
       }
 
+      input.inputBoxMap {
+        width:118px;
+        height:15px;
+        margin-bottom:5px;
+      }
+
       div.inputBoxNote {
         margin-top:5px;
         color:#6D7B8D;
@@ -73,17 +79,16 @@
         width:70px;
       }
 
-      #registerSubmit {
-        width:70px;
-        margin-left:12px;
-      }
+      input
     </style>
   </head>
   <body style="width:372px;">
     <div class="container" id="container">
       <div id="loggedIn">
         <div id="loggedInNav" class="row">
-          <div class="span3"><a id="userName" href="#"></a></div>
+          <div class="span3">
+            <a id="userName" href="#"></a>
+          </div>
           <input id="logoutSubmit" type="button" class="btn btn-small" value="Logout" tabindex="7">
           <input id="mapChangesSubmit" type="button" class="btn btn-small" value="Save" tabindex="6">
         </div>
@@ -100,6 +105,9 @@
         <div class="row-fluid">
           <div class="span3" style="font-size:18px;">
             <a id="goKaizen" href="#">Kaizen</a>
+          </div>
+          <div class="span7 offset1" style="font-size:12px; margin-left:55px; color:#777">
+            towards continuous improvement
           </div>
         </div>
         <div class="row-fluid">
@@ -134,13 +142,10 @@
             </div>
             <div class="row-fluid">
               <div class="span3">
-                <input type="button" id="loginSubmit" tabindex="5" value="Sign In">
+                <input type="button" class="btn btn-small" id="loginSubmit" tabindex="5" value="Sign In">
               </div>
-              <div class="span3">
-                <a id="registerLink" href="http://www.seekaizen.com">Register</a>
-              </div>
-              <div style="display:none;" class="span3 offset2">
-                <input type="button" id="registerSubmit" tabindex="6" value="Register">
+              <div class="span3 offset6">
+                <a class="btn btn-small" id="registerLink" href="#">Register</a>
               </div>
             </div>
           </form>

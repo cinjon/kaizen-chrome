@@ -65,23 +65,8 @@ function logoutRequest(callback) {
 }
 
 function registerLinkClick() {
-  chrome.tabs.create({
-        url: domainName + '/register'
-    });
+  chrome.tabs.create({url: domainName});
   return false;
-}
-
-function registerFormSubmit() {
-    email = document.getElementById('email').value;
-    password = document.getElementById('password').value;
-    first = document.getElementById('first').value;
-    last = document.getElementById('last').value;
-    if (checkEmailPassword(email, password) && checkFirstLast(first, last)) {
-        registerRequest(email, password, first, last, handleRegisterResponse);
-    } else {
-        //TODO
-        console.log('not a good register ... fix this declare later');
-    }
 }
 
 function loginFormSubmit() {
@@ -101,13 +86,6 @@ function logoutFormSubmit() {
 
 function handleLoginResponse(data) {
     if (!data || data.length == 0) {showLoggedOut();}
-    else {
-        showLoggedIn(data, setUserInfo);
-    }
-}
-
-function handleRegisterResponse(data) {
-    if (!data || data.length == 0) {showLoggedOut();} //WithErrors
     else {
         showLoggedIn(data, setUserInfo);
     }
@@ -154,8 +132,9 @@ function showBindings(bindings) {
         row.className = 'row';
         binding.className = 'span1';
         mapping.className = 'span2';
-        mapinput.className = 'span2';
+        mapinput.className = 'span2 inputBoxMap';
         mapinput.tabIndex = i;
+        mapinput.type = 'text';
 
         binding.innerHTML = i;
         if (bindings[i]) {
@@ -167,7 +146,6 @@ function showBindings(bindings) {
         binding.style.marginTop = "5px";
         mapping.style.marginTop = "5px";
         binding.style.fontSize = "10px";
-        row.style.marginBottom = "2px";
 
         row.appendChild(binding);
         row.appendChild(mapping);
@@ -190,7 +168,6 @@ function attemptLoginServer() {
 
 function showLoggedOut() {
     document.querySelector('#loginSubmit').addEventListener('click', loginFormSubmit);
-    document.querySelector('#registerSubmit').addEventListener('click', registerFormSubmit);
     document.querySelector('#registerLink').addEventListener('click', registerLinkClick);
     changeDisplay('loggedOut', 'block');
     changeDisplay('loggedIn', 'none');
@@ -211,8 +188,6 @@ function showLoggedIn(response, callback) {
     changeDisplay('loggedIn', 'block');
     userName = response.name;
     userNameRoute = response.nameRoute;
-    console.log('response');
-    console.log(response);
     showUsername();
     var bindings = {};
     for (var i = 1; i < maxBindings+1; i++) {
