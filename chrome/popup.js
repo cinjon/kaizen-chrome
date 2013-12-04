@@ -2,10 +2,25 @@ var bgp = chrome.extension.getBackgroundPage();
 var domainName = bgp.domainName;
 var maxBindings = bgp.maxBindings;
 var enableRegister = false;
+var userName = false;
+var userNameRoute = false;
 
 document.addEventListener('DOMContentLoaded', function () {
+//    Change this so that it uses session vars to log in if logged into site
+//     loggedInCheck(showLoggedIn, attemptLoginServer);
     loggedInCheck(showLoggedIn, showLoggedOut);
+    document.getElementById('userName').addEventListener('click', function() {
+        var url = domainName + '/me'
+        chrome.tabs.create({url:url});
+    });
+    document.getElementById('goKaizen').addEventListener('click', function() {
+        chrome.tabs.create({url:domainName});
+    });
 });
+
+function addClickToVisitSite() {
+};
+
 
 function loginRequest(email, password, callback1, callback2) {
     if (!callback2) {callback2 = callback1;}
@@ -87,16 +102,14 @@ function logoutFormSubmit() {
 function handleLoginResponse(data) {
     if (!data || data.length == 0) {showLoggedOut();}
     else {
-        showLoggedIn(data);
-        setUserInfo(data);
+        showLoggedIn(data, setUserInfo);
     }
 }
 
 function handleRegisterResponse(data) {
     if (!data || data.length == 0) {showLoggedOut();} //WithErrors
     else {
-        showLoggedIn(data);
-        setUserInfo(data);
+        showLoggedIn(data, setUserInfo);
     }
 }
 
@@ -126,9 +139,8 @@ function checkFirstLast(first, last) {
     return true;
 }
 
-function showUsername(name) {
-    var userName = document.getElementById('userName');
-    userName.innerHTML = '<a href="' + domainName + '/me"><b>' + name + '</b></a>';
+function showUsername() {
+    document.getElementById('userName').innerHTML = '<b>' + userName + '</b>';
 }
 
 function showBindings(bindings) {
@@ -146,8 +158,11 @@ function showBindings(bindings) {
         mapinput.tabIndex = i;
 
         binding.innerHTML = i;
-        if (bindings[i]) {mapping.innerHTML = '<b>' + bindings[i] + '</b>';}
-        else {mapping.innerHTML = "";}
+        if (bindings[i]) {
+            setMapBinding(mapping, bindings[i]);
+        } else {
+            mapping.innerHTML = "";
+        }
 
         binding.style.marginTop = "5px";
         mapping.style.marginTop = "5px";
@@ -159,7 +174,19 @@ function showBindings(bindings) {
         row.appendChild(mapinput);
         rows.appendChild(row);
         }
-   }
+}
+
+function setMapBinding(mapping, binding) {
+    mapping.innerHTML = '<b><a href="#">' + binding + '</a></b>';
+    mapping.addEventListener('click', function() {
+        var url = domainName + '/user/' + userNameRoute + '/' + binding;
+        chrome.tabs.create({url:url});
+    });
+};
+
+function attemptLoginServer() {
+    loginRequest('', '', handleLoginResponse, showLoggedOut);
+};
 
 function showLoggedOut() {
     document.querySelector('#loginSubmit').addEventListener('click', loginFormSubmit);
@@ -170,17 +197,23 @@ function showLoggedOut() {
 }
 
 function setUserInfo(response) {
-    bgp.setNameToStorage(response.name);
-    for (binding in response.bindings) {
-        var key = 'binding_' + binding;
-        bgp.setBindingToStorage(key, response.bindings[binding]);
+    bgp.setToStorage('name', response.name);
+    bgp.setToStorage('nameRoute', response.nameRoute);
+    for (var key in response) {
+        if (key.slice(0,7) == 'binding') {
+            bgp.setToStorage(key, response[key]);
+        }
     }
 }
 
-function showLoggedIn(response) {
+function showLoggedIn(response, callback) {
     changeDisplay('loggedOut', 'none');
     changeDisplay('loggedIn', 'block');
-    showUsername(response.name);
+    userName = response.name;
+    userNameRoute = response.nameRoute;
+    console.log('response');
+    console.log(response);
+    showUsername();
     var bindings = {};
     for (var i = 1; i < maxBindings+1; i++) {
         key = 'binding_' + i;
@@ -191,6 +224,10 @@ function showLoggedIn(response) {
     showBindings(bindings);
     document.querySelector('#mapChangesSubmit').addEventListener('click', mapChangesHandler);
     document.querySelector('#logoutSubmit').addEventListener('click', logoutFormSubmit);
+    if (callback) {
+        //intended for settinguserinfo
+        callback(response);
+    }
 }
 
 function changeDisplay(elementID, display) {
@@ -207,7 +244,7 @@ function mapChangesHandler() {
         var inputMapping = maps[2].value;
 
         if (inputMapping != "" && (oldMapping != inputMapping)) {
-            maps[1].innerHTML = "<b>" + inputMapping + "</b>";
+            setMapBinding(maps[1], inputMapping);
             dbChangeBinding(maps[0].innerHTML, inputMapping);
         }
         maps[2].value = "";
