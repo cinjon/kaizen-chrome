@@ -4,6 +4,7 @@ var maxBindings = bgp.maxBindings;
 var enableRegister = false;
 var userName = false;
 var userNameRoute = false;
+var userMapnames = false;
 
 document.addEventListener('DOMContentLoaded', function () {
 //    Change this so that it uses session vars to log in if logged into site
@@ -117,7 +118,7 @@ function showUsername() {
     document.getElementById('userName').innerHTML = '<b>' + userName + '</b>';
 }
 
-function showBindings(bindings) {
+function showBindings(bindings, mapnames) {
     var rows = document.getElementById('mapsUGC');
     for (var i = 1; i < maxBindings+1; i++) {
         var row = document.createElement('div'); //the overarching row
@@ -130,7 +131,6 @@ function showBindings(bindings) {
         mapping.className = 'span2';
         mapinput.className = 'span2 inputBoxMap';
         mapinput.tabIndex = i;
-        mapinput.type = 'text';
 
         binding.innerHTML = i;
         if (bindings[i]) {
@@ -147,7 +147,37 @@ function showBindings(bindings) {
         row.appendChild(mapping);
         row.appendChild(mapinput);
         rows.appendChild(row);
+
+        addMapinputAttrs(mapinput, mapnames);
+    }
+}
+
+function addMapinputAttrs(input, mapnames) {
+    input.type = 'text';
+    input.click(function (e) {
+        console.log('yooo');
+        if (e.which == 13) {
+            console.log('yoooo');
+            mapChangesHandler();
+            return false;
         }
+    });
+    input.setAttribute('data-provide', 'typeahead');
+    input.setAttribute('data-items', 4);
+    input.setAttribute('data-source', make_data_source(mapnames));
+}
+
+function make_data_source(names) {
+    data_source = "[";
+    for (var i = 0; i < names.length; i++) {
+        data_source = data_source + '"' + names[i] + '"';
+        if (i < names.length - 1) {
+            data_source += ',';
+        } else {
+            data_source += ']';
+        }
+    }
+    return data_source;
 }
 
 function setMapBinding(mapping, binding) {
@@ -159,7 +189,7 @@ function setMapBinding(mapping, binding) {
 };
 
 function attemptLoginServer() {
-    loginRequest('', '', handleLoginResponse, showLoggedOut);
+    loginRequest('', '', handleLoginResponse, shoowLoggedOut);
 };
 
 function showLoggedOut() {
@@ -172,6 +202,7 @@ function showLoggedOut() {
 function setUserInfo(response) {
     bgp.setToStorage('name', response.name);
     bgp.setToStorage('nameRoute', response.nameRoute);
+    bgp.setToStorage('mapnames', response.mapnames);
     for (var key in response) {
         if (key.slice(0,7) == 'binding') {
             bgp.setToStorage(key, response[key]);
@@ -184,6 +215,8 @@ function showLoggedIn(response, callback) {
     changeDisplay('loggedIn', 'block');
     userName = response.name;
     userNameRoute = response.nameRoute;
+    userMapnames = response.mapnames;
+
     showUsername();
     var bindings = {};
     for (var i = 1; i < maxBindings+1; i++) {
@@ -192,7 +225,7 @@ function showLoggedIn(response, callback) {
             bindings[i] = response[key];
         }
     }
-    showBindings(bindings);
+    showBindings(bindings, response.mapnames);
     document.querySelector('#mapChangesSubmit').addEventListener('click', mapChangesHandler);
     document.querySelector('#logoutSubmit').addEventListener('click', logoutFormSubmit);
     if (callback) {
@@ -216,14 +249,36 @@ function mapChangesHandler() {
 
         if (inputMapping != "" && (oldMapping != inputMapping)) {
             setMapBinding(maps[1], inputMapping);
-            dbChangeBinding(maps[0].innerHTML, inputMapping);
+            dbChangeBinding(maps[0].innerHTML, inputMapping, function() {
+                console.log('doing calback');
+                if (userMapnames.indexOf(inputMapping) == -1) {
+                    console.log('inputmapping not in usermapnames');
+                    newMapnameHandler(inputMapping);
+                }
+            });
         }
         maps[2].value = "";
     }
 }
 
-function dbChangeBinding(binding, mapping) {
-    bgp.dbChangeBinding(binding, mapping);
+function newMapnameHandler(mapname) {
+    console.log('setting newmap to storage: ' + mapname);
+    userMapnames.append(mapname);
+    console.log(userMapnames);
+    bgp.setToStorage('mapnames', userMapnames, function() {
+        var rows = document.getElementById('mapsUGC');
+        for (var i = 0; i < rows.childNodes.length; i++) {
+            var maps = rows.childNodes[i].childNodes;
+            var input = maps[2];
+            input.setAttribute('data-source', make_data_source(userMapnames));
+        }
+    });
+}
+
+function dbChangeBinding(binding, mapping, callback) {
+    bgp.dbChangeBinding(binding, mapping, function() {
+        if (callback) {callback();}
+    });
 }
 
 function loggedInCheck(inCallback, outCallback) {

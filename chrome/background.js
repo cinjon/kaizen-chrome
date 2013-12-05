@@ -1,5 +1,5 @@
-var domainName = 'http://www.seekaizen.com';
-// var domainName = 'http://0.0.0.0:5000';
+// var domainName = 'http://www.seekaizen.com';
+var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
 
@@ -32,12 +32,12 @@ function makeSendText(d) {
     return text;
 }
 
-function dbChangeBinding(binding, mapping) {
+function dbChangeBinding(binding, mapping, callback) {
     var stateChangeFunction = function() {
         if (this.readyState == 4) {
             if (this.status == 201) {
                 key = 'binding_' + binding;
-                setToStorage(key, mapping);
+                setToStorage(key, mapping, callback);
             }
         }
     }
@@ -89,10 +89,14 @@ function flashIcon() {
     setTimeout(function(){chrome.browserAction.setIcon({path:"kaizenIcon16.png"})}, 200);
 }
 
-function setToStorage(key, value) {
+function setToStorage(key, value, callback) {
     var store_dict = {};
     store_dict[key] = value;
-    chrome.storage.sync.set(store_dict);
+    console.log('setting ' + key + ' with value ' + value + ' to storage');
+    chrome.storage.sync.set(store_dict, function() {
+        console.log('sunc');
+        if (callback) {callback();}
+    });
 }
 
 function clearUserData() {
@@ -101,7 +105,7 @@ function clearUserData() {
 
 function getStoredUser(inCallback, outCallback) {
 //     clearUserData()
-    chrome.storage.sync.get(['name', 'nameRoute', 'binding_1', 'binding_2'], function(response) {
+    chrome.storage.sync.get(['name', 'nameRoute', 'mapnames', 'binding_1', 'binding_2'], function(response) {
         if ('name' in response) {inCallback(response);}
         else {outCallback();}
     });
