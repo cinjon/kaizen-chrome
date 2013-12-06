@@ -32,12 +32,12 @@ function makeSendText(d) {
     return text;
 }
 
-function dbChangeBinding(binding, mapping, callback) {
+function dbChangeBinding(binding, mapping) {
     var stateChangeFunction = function() {
         if (this.readyState == 4) {
             if (this.status == 201) {
                 key = 'binding_' + binding;
-                setToStorage(key, mapping, callback);
+                setToStorage(key, mapping);
             }
         }
     }
@@ -89,14 +89,10 @@ function flashIcon() {
     setTimeout(function(){chrome.browserAction.setIcon({path:"kaizenIcon16.png"})}, 200);
 }
 
-function setToStorage(key, value, callback) {
+function setToStorage(key, value) {
     var store_dict = {};
     store_dict[key] = value;
-    console.log('setting ' + key + ' with value ' + value + ' to storage');
-    chrome.storage.sync.set(store_dict, function() {
-        console.log('sunc');
-        if (callback) {callback();}
-    });
+    chrome.storage.sync.set(store_dict);
 }
 
 function clearUserData() {

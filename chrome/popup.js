@@ -127,8 +127,8 @@ function showBindings(bindings, mapnames) {
         var mapinput = document.createElement('input'); //change the mapping
 
         row.className = 'row';
-        binding.className = 'span1';
-        mapping.className = 'span2';
+        binding.className = 'span1 mapBinding';
+        mapping.className = 'span2 mapName';
         mapinput.className = 'span2 inputBoxMap';
         mapinput.tabIndex = i;
 
@@ -150,18 +150,16 @@ function showBindings(bindings, mapnames) {
 
         addMapinputAttrs(mapinput, mapnames);
     }
-}
-
-function addMapinputAttrs(input, mapnames) {
-    input.type = 'text';
-    input.click(function (e) {
-        console.log('yooo');
-        if (e.which == 13) {
-            console.log('yoooo');
+    $('input.inputBoxMap').keyup(function (e) {
+        if (e.keyCode == 13) {
             mapChangesHandler();
             return false;
         }
     });
+}
+
+function addMapinputAttrs(input, mapnames) {
+    input.type = 'text';
     input.setAttribute('data-provide', 'typeahead');
     input.setAttribute('data-items', 4);
     input.setAttribute('data-source', make_data_source(mapnames));
@@ -180,10 +178,10 @@ function make_data_source(names) {
     return data_source;
 }
 
-function setMapBinding(mapping, binding) {
-    mapping.innerHTML = '<b><a href="#">' + binding + '</a></b>';
-    mapping.addEventListener('click', function() {
-        var url = domainName + '/user/' + userNameRoute + '/' + binding;
+function setMapBinding(mappingSpan, mapping) {
+    mappingSpan.innerHTML = '<b><a href="#">' + mapping + '</a></b>';
+    mappingSpan.addEventListener('click', function() {
+        var url = domainName + '/user/' + userNameRoute + '/' + mapping;
         chrome.tabs.create({url:url});
     });
 };
@@ -240,45 +238,37 @@ function changeDisplay(elementID, display) {
     }
 }
 
+function checkValidInput(input) {
+    return (input && input != "");
+}
+
 function mapChangesHandler() {
     var rows = document.getElementById('mapsUGC');
     for (var i = 0; i < rows.childNodes.length; i++) {
         var maps = rows.childNodes[i].childNodes;
-        var oldMapping = maps[1].innerHTML;
-        var inputMapping = maps[2].value;
+        var mappingSpan = maps[1];
+        var oldMapping = mappingSpan.innerHTML;
+        var newMapping = maps[2].value;
 
-        if (inputMapping != "" && (oldMapping != inputMapping)) {
-            setMapBinding(maps[1], inputMapping);
-            dbChangeBinding(maps[0].innerHTML, inputMapping, function() {
-                console.log('doing calback');
-                if (userMapnames.indexOf(inputMapping) == -1) {
-                    console.log('inputmapping not in usermapnames');
-                    newMapnameHandler(inputMapping);
-                }
-            });
+        if (newMapping != "" && (oldMapping != newMapping)) {
+            setMapBinding(mappingSpan, newMapping);
+            dbChangeBinding(maps[0].innerHTML, newMapping);
+            updateMapnames(newMapping);
         }
         maps[2].value = "";
     }
 }
 
-function newMapnameHandler(mapname) {
-    console.log('setting newmap to storage: ' + mapname);
-    userMapnames.append(mapname);
-    console.log(userMapnames);
-    bgp.setToStorage('mapnames', userMapnames, function() {
-        var rows = document.getElementById('mapsUGC');
-        for (var i = 0; i < rows.childNodes.length; i++) {
-            var maps = rows.childNodes[i].childNodes;
-            var input = maps[2];
-            input.setAttribute('data-source', make_data_source(userMapnames));
-        }
-    });
+function updateMapnames(mapname) {
+    if (userMapnames.indexOf(mapname) == -1) {
+        userMapnames.push(mapname);
+        bgp.setToStorage('mapnames', userMapnames);
+        $('input.inputBoxMap').attr('data-source', make_data_source(userMapnames));
+    }
 }
 
-function dbChangeBinding(binding, mapping, callback) {
-    bgp.dbChangeBinding(binding, mapping, function() {
-        if (callback) {callback();}
-    });
+function dbChangeBinding(binding, mapping) {
+    bgp.dbChangeBinding(binding, mapping);
 }
 
 function loggedInCheck(inCallback, outCallback) {
