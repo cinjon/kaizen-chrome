@@ -4,37 +4,42 @@
     <link href="bootstrap.min.css" rel="stylesheet" media="screen">
     <script src="jquery-1.9.1.min.js"></script>
     <script src="bootstrap.min.js"></script>
+    <script src="bootstrap-typeahead.js"></script>
+    <script src="squiggle.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaizen</title>
     <style>
       body {
         width:372px;
-        height:300px;
+        background-color:#dceaf4;
       }
 
       #container {
         width:inherit;
         height:inherit;
-        margin-left:20px;
-        margin-top:20px;
+        padding:10px;
+      }
+
+      input.inputBoxMap {
+        width:118px;
+        height:15px;
+        margin-bottom:5px;
+      }
+
+      .row {
+        margin-left:0px;
       }
     </style>
   </head>
   <body>
     <div class="container" id="container">
-      <div class="row"><input id="search" type="text" tabindex="1" placeholder="Enter Map"></div>
-      <div class="row"><input id="note" type="text" tabindex="2" placeholder="Optional Note"></div>
       <div class="row">
-        <div class="span5 offset1"><input id="save" type="button" tabindex="3" value="Save"></div>
-        <div class="span5"><input id="cancel" type="button" tabindex="4" value="Cancel"></div>
+        <input id="search" placeholder="Enter a Map" class="span2 offset3 inputBoxMap" type="text" tabindex="1">
       </div>
-      <div class="row" id="results"></div>
-
+      <div class="row" id="title"></div>
+      <div class="row" id="text"></div>
     </div>
   </body>
-  <footer>
-    <script src="squiggle.js"></script>
-  </footer>
 </html>
 
 

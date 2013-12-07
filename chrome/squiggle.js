@@ -1,48 +1,58 @@
-bgp = chrome.extension.getBackgroundPage();
-query_url = bgp.domainName + '/query/maps';
+var bgp = chrome.extension.getBackgroundPage();
+var searchNote = bgp.searchNote;
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#cancel').addEventListener('click', closeWindow);
-    document.querySelector('#save').addEventListener('click', saveNote);
+    showNote();
 });
 
-$("#search").keyup(function(e) {
-    var query = $("#search").val();
-    console.log("query is: " + query);
-    console.log("query_url is : " + query_url);
-    $.getJSON(query_url,
-              {'query':query},
-              function(data) {
-                  console.log('data is ' + data);
-                  $("#results").empty();
-                  $("#results").append("results are");
-                  for (var key in data) {
-                      console.log('key: ' + key + ', data: ' + data[key]);
-                      $("#results").append("<div>" + key + ":" + data[key] + "</div>");
-                  }
-              });
-});
+function shortString(str, len) {
+    if (str.length > len) {
+        return str.slice(0,len-3) + '...'
+    } else {
+        return str;
+    }
+}
 
-$(document).keyup(function(e) {
-    keyCode = e.keyCode;
-    if (keyCode == 13) {$('#save').click();}
-    else if (keyCode == 27) {$('#cancel').click();}
-});
+function fitTitle(title) {
+    return shortString(title, 40);
+}
+
+function fitText(text) {
+    return shortString(text, 200);
+}
+
+function noTypeahead() {
+    var typeahead = $('.typeahead');
+    if (!typeahead || typeahead.css("display") == "none") {
+        return true;
+    }
+    return false;
+}
+
+function showNote() {
+    document.getElementById('title').innerHTML = '<b>' + fitTitle(decodeURIComponent(searchNote.title)) + '</b>';
+    document.getElementById('text').innerHTML = fitText(decodeURIComponent(searchNote.text));
+    $('#search').attr('data-provide', 'typeahead');
+    $('#search').attr('data-items', 4);
+    $('#search').attr('data-source', bgp.make_data_source());
+    $('#search').
+    $('#search').keyup(function(e) {
+        if (e.keyCode == 13 && noTypeahead()) {saveNote();}
+        else if (e.keyCode == 27) {closeWindow();}
+    });
+    $('#search').focus();
+}
 
 function closeWindow() {
     //Close this window
-    console.log('closing window');
     window.close();
 }
 
 function saveNote() {
-    console.log('saving note');
     mapping = $("#search").val();
-    optionalNote = $("#note").val();
     if (mapping) {
-        console.log('mapping exists, logging via bgp');
-        chrome.extension.getBackgroundPage().logSearchNote(mapping, optionalNote);
-        closeWindow();
+//         chrome.extension.getBackgroundPage().logSearchNote(mapping);
+//         closeWindow();
     } else {
         console.log('no map, need a map');
     }
