@@ -2,6 +2,14 @@
 var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
+var userNameRoute = false;
+var userMapnames = false;
+var userName = false;
+
+chrome.runtime.onInstalled.addListener(function() {
+    //runs when extension is installed or reloaded. Use it to sync the user
+
+});
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.method == "logNote") {
@@ -51,23 +59,24 @@ function logNote(text, title, href, keyCode) {
             if (this.status == 201) {flashIcon();}
         }
     }
-    var sendText = makeSendText({'text':text, 'title':title, 'href':href, 'keyCode':keyCode});
+    var sendText = makeSendText({'text':text, 'title':title,
+                                 'href':href, 'keyCode':keyCode});
     var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
                             sendText, stateChangeFunction);
 }
 
 function showSearch(text, title, href) {
     var w = 372;
-    var h = 100;
+    var h = 150;
     var left = screen.width - w - 20;
-    var top = 0;
+    var top = screen.height/4;
     searchNote = {'text':text, 'title':title, 'href':href};
     chrome.windows.create({'url':'squiggle.html', 'type':'popup',
                            'height':h, 'width':w, 'focused':true,
                            'left':left, 'top':top});
 }
 
-function logSearchNote(mapping, userGeneratedNote) {
+function logSearchNote(mapping) {
     var stateChangeFunction = function() {
         if (this.readyState == 4) {
             if (this.status == 201) {flashIcon();}
@@ -77,8 +86,7 @@ function logSearchNote(mapping, userGeneratedNote) {
         var sendText = makeSendText({'text':searchNote['text'],
                                     'title':searchNote['title'],
                                     'href':searchNote['href'],
-                                    'mapping':mapping,
-                                    'ugn':userGeneratedNote});
+                                    'mapping':mapping});
         var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
                                 sendText, stateChangeFunction);
     }
@@ -105,4 +113,20 @@ function getStoredUser(inCallback, outCallback) {
         if ('name' in response) {inCallback(response);}
         else {outCallback();}
     });
+}
+
+function make_data_source(names) {
+    if (!names) {
+        names = userMapnames;
+    }
+    data_source = "[";
+    for (var i = 0; i < names.length; i++) {
+        data_source = data_source + '"' + names[i] + '"';
+        if (i < names.length - 1) {
+            data_source += ',';
+        } else {
+            data_source += ']';
+        }
+    }
+    return data_source;
 }

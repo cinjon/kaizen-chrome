@@ -2,9 +2,6 @@ var bgp = chrome.extension.getBackgroundPage();
 var domainName = bgp.domainName;
 var maxBindings = bgp.maxBindings;
 var enableRegister = false;
-var userName = false;
-var userNameRoute = false;
-var userMapnames = false;
 
 document.addEventListener('DOMContentLoaded', function () {
 //    Change this so that it uses session vars to log in if logged into site
@@ -115,7 +112,7 @@ function checkFirstLast(first, last) {
 }
 
 function showUsername() {
-    document.getElementById('userName').innerHTML = '<b>' + userName + '</b>';
+    document.getElementById('userName').innerHTML = '<b>' + bgp.userName + '</b>';
 }
 
 function showBindings(bindings, mapnames) {
@@ -162,26 +159,13 @@ function addMapinputAttrs(input, mapnames) {
     input.type = 'text';
     input.setAttribute('data-provide', 'typeahead');
     input.setAttribute('data-items', 4);
-    input.setAttribute('data-source', make_data_source(mapnames));
-}
-
-function make_data_source(names) {
-    data_source = "[";
-    for (var i = 0; i < names.length; i++) {
-        data_source = data_source + '"' + names[i] + '"';
-        if (i < names.length - 1) {
-            data_source += ',';
-        } else {
-            data_source += ']';
-        }
-    }
-    return data_source;
+    input.setAttribute('data-source', bgp.make_data_source(mapnames));
 }
 
 function setMapBinding(mappingSpan, mapping) {
     mappingSpan.innerHTML = '<b><a href="#">' + mapping + '</a></b>';
     mappingSpan.addEventListener('click', function() {
-        var url = domainName + '/user/' + userNameRoute + '/' + mapping;
+        var url = domainName + '/user/' + bgp.userNameRoute + '/' + mapping;
         chrome.tabs.create({url:url});
     });
 };
@@ -211,9 +195,9 @@ function setUserInfo(response) {
 function showLoggedIn(response, callback) {
     changeDisplay('loggedOut', 'none');
     changeDisplay('loggedIn', 'block');
-    userName = response.name;
-    userNameRoute = response.nameRoute;
-    userMapnames = response.mapnames;
+    bgp.userName = response.name;
+    bgp.userNameRoute = response.nameRoute;
+    bgp.userMapnames = response.mapnames;
 
     showUsername();
     var bindings = {};
@@ -260,10 +244,10 @@ function mapChangesHandler() {
 }
 
 function updateMapnames(mapname) {
-    if (userMapnames.indexOf(mapname) == -1) {
-        userMapnames.push(mapname);
-        bgp.setToStorage('mapnames', userMapnames);
-        $('input.inputBoxMap').attr('data-source', make_data_source(userMapnames));
+    if (bgp.userMapnames.indexOf(mapname) == -1) {
+        bgp.userMapnames.push(mapname);
+        bgp.setToStorage('mapnames', bgp.userMapnames);
+        $('input.inputBoxMap').attr('data-source', bgp.make_data_source(bgp.userMapnames));
     }
 }
 

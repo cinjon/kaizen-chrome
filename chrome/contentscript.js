@@ -7,15 +7,23 @@ window.addEventListener("keydown", function(event) {
     else if (modifier && keyCode == 192) {showSearch();}
 });
 
-function logNote(keyCode) {
-    //TODO -- send img, smart text search.
+function _getPageComponents() {
     var text = encodeURIComponent(window.getSelection().toString());
     var href = encodeURIComponent(location.href);
     var title = encodeURIComponent(document.title);
-    chrome.runtime.sendMessage({method:"logNote", text:text, title:title,
-                                  href:href, keyCode:keyCode});
+    return {text:text, href:href, title:title};
+}
+
+function logNote(keyCode) {
+    //TODO -- send img, smart text search.
+    var msg = _getPageComponents();
+    msg['method'] = "logNote";
+    msg['keyCode'] = keyCode;
+    chrome.runtime.sendMessage(msg);
 }
 
 function showSearch() {
-    chrome.runtime.sendMessage({method:"showSearch"});
+    var msg = _getPageComponents();
+    msg['method'] = "showSearch";
+    chrome.runtime.sendMessage(msg);
 }
