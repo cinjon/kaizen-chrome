@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', function() {
     showNote();
 });
 
+$(document).keyup(function(e) {
+    if (e.keyCode == 27) {closeWindow()};
+});
+
 function shortString(str, len) {
     if (str.length > len) {
         return str.slice(0,len-3) + '...'
@@ -14,7 +18,7 @@ function shortString(str, len) {
 }
 
 function fitTitle(title) {
-    return shortString(title, 40);
+    return shortString(title, 34);
 }
 
 function fitText(text) {
@@ -30,12 +34,14 @@ function noTypeahead() {
 }
 
 function showNote() {
-    document.getElementById('title').innerHTML = '<b>' + fitTitle(decodeURIComponent(searchNote.title)) + '</b>';
-    document.getElementById('text').innerHTML = fitText(decodeURIComponent(searchNote.text));
+    document.getElementById('titleRow').innerHTML = '<b><a href="' + decodeURIComponent(searchNote.href) + '">' + fitTitle(decodeURIComponent(searchNote.title)) + '</a></b>';
+    document.getElementById('textRow').innerHTML = fitText(decodeURIComponent(searchNote.text));
+    $('#binding').keyup(function(e) {
+        if (e.keyCode == 13) {saveNote();}
+    });
     $('#search').attr('data-provide', 'typeahead');
     $('#search').attr('data-items', 4);
     $('#search').attr('data-source', bgp.make_data_source());
-    $('#search').
     $('#search').keyup(function(e) {
         if (e.keyCode == 13 && noTypeahead()) {saveNote();}
         else if (e.keyCode == 27) {closeWindow();}
@@ -50,10 +56,12 @@ function closeWindow() {
 
 function saveNote() {
     mapping = $("#search").val();
+    binding = $("#binding").val();
     if (mapping) {
-//         chrome.extension.getBackgroundPage().logSearchNote(mapping);
-//         closeWindow();
-    } else {
-        console.log('no map, need a map');
+        chrome.extension.getBackgroundPage().logSearchNote(mapping);
+        if (binding == 1 || binding == 2) {
+            chrome.extension.getBackgroundPage().dbChangeBinding(binding, mapping);
+        }
+        closeWindow();
     }
 };
