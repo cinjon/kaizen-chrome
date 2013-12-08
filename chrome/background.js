@@ -68,6 +68,9 @@ function logNote(text, title, href, keyCode) {
 function showSearch(text, title, href) {
     var w = 372;
     var h = 150;
+    if (text == '') {
+        h = 25;
+    }
     var left = screen.width - w - 20;
     var top = screen.height/4;
     searchNote = {'text':text, 'title':title, 'href':href};
