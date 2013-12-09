@@ -7,8 +7,9 @@ var userMapnames = false;
 var userName = false;
 
 chrome.runtime.onInstalled.addListener(function() {
-    //runs when extension is installed or reloaded. Use it to sync the user
-
+    //runs when extension is installed or reloaded.
+    // Use it to sync the user if nothing changed in store
+    clearUserData();
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
