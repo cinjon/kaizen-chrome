@@ -1,5 +1,5 @@
-var domainName = 'http://www.seekaizen.com';
-// var domainName = 'http://0.0.0.0:5000';
+// var domainName = 'http://www.seekaizen.com';
+var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
 var userNameRoute = false;
@@ -88,9 +88,9 @@ function logSearchNote(mapping) {
     }
     if (searchNote) {
         var sendText = makeSendText({'text':searchNote['text'],
-                                    'title':searchNote['title'],
-                                    'href':searchNote['href'],
-                                    'mapping':mapping});
+                                     'title':searchNote['title'],
+                                     'href':searchNote['href'],
+                                     'mapping':mapping});
         var xhr = newXMLRequest("POST", domainName + "/xhr_notes",
                                 sendText, stateChangeFunction);
     }
