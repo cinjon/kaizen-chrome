@@ -6,14 +6,8 @@ var enableRegister = false;
 document.addEventListener('DOMContentLoaded', function () {
 //    Change this so that it uses session vars to log in if logged into site
 //     loggedInCheck(showLoggedIn, attemptLoginServer);
+    document.querySelector('#logoutSubmit').addEventListener('click', logoutFormSubmit);
     loggedInCheck(showLoggedIn, showLoggedOut);
-    document.getElementById('userName').addEventListener('click', function() {
-        var url = domainName + '/me'
-        chrome.tabs.create({url:url});
-    });
-    document.getElementById('goKaizen').addEventListener('click', function() {
-        chrome.tabs.create({url:domainName});
-    });
 });
 
 function loginRequest(email, password, callback1, callback2) {
@@ -64,8 +58,8 @@ function registerLinkClick() {
 }
 
 function loginFormSubmit() {
-    email = document.getElementById('email').value;
-    password = document.getElementById('password').value;
+    email = document.querySelector('#email').value;
+    password = document.querySelector('#password').value;
     if (checkEmailPassword(email, password)) {
         loginRequest(email, password, handleLoginResponse);
     } else {
@@ -112,11 +106,11 @@ function checkFirstLast(first, last) {
 }
 
 function showUsername() {
-    document.getElementById('userName').innerHTML = '<b>' + bgp.userName + '</b>';
+    document.querySelector('#userName').innerHTML = '<b>' + bgp.userName + '</b>';
 }
 
 function showBindings(bindings, mapnames) {
-    var rows = document.getElementById('mapsUGC');
+    var rows = document.querySelector('#mapsUGC');
     for (var i = 1; i < maxBindings+1; i++) {
         var row = document.createElement('div'); //the overarching row
         var binding = document.createElement('div'); //the integer to ctrl-key
@@ -177,6 +171,9 @@ function attemptLoginServer() {
 function showLoggedOut() {
     document.querySelector('#loginSubmit').addEventListener('click', loginFormSubmit);
     document.querySelector('#registerLink').addEventListener('click', registerLinkClick);
+    document.querySelector('#goKaizen').addEventListener('click', function() {
+        chrome.tabs.create({url:domainName});
+    });
     changeDisplay('loggedOut', 'block');
     changeDisplay('loggedIn', 'none');
 }
@@ -209,7 +206,11 @@ function showLoggedIn(response, callback) {
     }
     showBindings(bindings, response.mapnames);
     document.querySelector('#mapChangesSubmit').addEventListener('click', mapChangesHandler);
-    document.querySelector('#logoutSubmit').addEventListener('click', logoutFormSubmit);
+    document.querySelector('#userName').addEventListener('click', function() {
+        var url = domainName + '/me'
+        chrome.tabs.create({url:url});
+    });
+
     if (callback) {
         //intended for settinguserinfo
         callback(response);
@@ -227,7 +228,7 @@ function checkValidInput(input) {
 }
 
 function mapChangesHandler() {
-    var rows = document.getElementById('mapsUGC');
+    var rows = document.querySelector('#mapsUGC');
     for (var i = 0; i < rows.childNodes.length; i++) {
         var maps = rows.childNodes[i].childNodes;
         var mappingSpan = maps[1];
@@ -260,7 +261,7 @@ function loggedInCheck(inCallback, outCallback) {
 }
 
 function clearData() {
-    var rows = document.getElementById('mapsUGC');
+    var rows = document.querySelector('#mapsUGC');
     rows.innerHTML = "";
     bgp.clearUserData();
 }
