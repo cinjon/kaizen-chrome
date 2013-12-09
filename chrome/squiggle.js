@@ -58,9 +58,9 @@ function saveNote() {
     mapping = $("#search").val();
     binding = $("#binding").val();
     if (mapping) {
-        chrome.extension.getBackgroundPage().logSearchNote(mapping);
+        bgp.logSearchNote(mapping);
         if (binding == 1 || binding == 2) {
-            chrome.extension.getBackgroundPage().dbChangeBinding(binding, mapping);
+            bgp.dbChangeBinding(binding, mapping);
         }
         closeWindow();
     }
