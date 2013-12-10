@@ -58,10 +58,10 @@ function saveNote() {
     mapping = $("#search").val();
     binding = $("#binding").val();
     if (mapping) {
-        bgp.logSearchNote(mapping);
         if (binding == 1 || binding == 2) {
             bgp.dbChangeBinding(binding, mapping);
         }
+        bgp.logSearchNote(mapping);
         closeWindow();
     }
 };

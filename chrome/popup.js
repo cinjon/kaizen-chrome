@@ -245,9 +245,7 @@ function mapChangesHandler() {
 }
 
 function updateMapnames(mapname) {
-    if (bgp.userMapnames.indexOf(mapname) == -1) {
-        bgp.userMapnames.push(mapname);
-        bgp.setToStorage('mapnames', bgp.userMapnames);
+    if (bgp.updateMapnames(mapname)) {
         $('input.inputBoxMap').attr('data-source', bgp.make_data_source(bgp.userMapnames));
     }
 }

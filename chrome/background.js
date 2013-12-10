@@ -1,5 +1,5 @@
-var domainName = 'http://www.seekaizen.com';
-// var domainName = 'http://0.0.0.0:5000';
+// var domainName = 'http://www.seekaizen.com';
+var domainName = 'http://0.0.0.0:5000';
 var maxBindings = 2;
 var searchNote = null;
 var userNameRoute = false;
@@ -81,6 +81,7 @@ function showSearch(text, title, href) {
 }
 
 function logSearchNote(mapping) {
+    updateMapnames(mapping);
     var stateChangeFunction = function() {
         if (this.readyState == 4) {
             if (this.status == 201) {flashIcon();}
@@ -133,4 +134,14 @@ function make_data_source(names) {
         }
     }
     return data_source;
+}
+
+function updateMapnames(mapname) {
+    if (userMapnames.indexOf(mapname) == -1) {
+        userMapnames.push(mapname);
+        setToStorage('mapnames', userMapnames);
+        return true;
+    } else {
+        return false;
+    }
 }
