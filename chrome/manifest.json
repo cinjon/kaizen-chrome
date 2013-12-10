@@ -3,7 +3,7 @@
 
   "name": "Kaizen",
   "description": "Change for the Better",
-  "version": "2.3.3",
+  "version": "2.3.3.2",
 
   "background": {
     "scripts": ["background.js"],
