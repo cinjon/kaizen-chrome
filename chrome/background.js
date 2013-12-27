@@ -1,10 +1,11 @@
 var domainName = 'http://www.seekaizen.com';
 // var domainName = 'http://0.0.0.0:5000';
-var maxBindings = 2;
+var maxBindings = 4;
 var searchNote = null;
 var userNameRoute = false;
 var userMapnames = false;
 var userName = false;
+var userModifier = 'ctrlKey';
 
 chrome.runtime.onInstalled.addListener(function() {
     //runs when extension is installed or reloaded.
@@ -13,12 +14,22 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.method == "logNote") {
+    if (request.method == "logNote" && request[userModifier]) {
         logNote(request.text, request.title, request.href, request.keyCode);
-    } else if (request.method == "showSearch") {
+    } else if (request.method == "showSearch" && request[userModifier]) {
         showSearch(request.text, request.title, request.href);
     }
 });
+
+function verifyModifier(request) {
+    if (userModifier && userModifier == 'ctrlKey' && request.ctrlKey) {
+        return true;
+    } else if (userModifier && userModifier == 'altKey' && request.altKey) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function newXMLRequest(httpType, address, sendText, stateChangeFunction) {
     var xhr = new XMLHttpRequest();
@@ -113,8 +124,11 @@ function clearUserData() {
 }
 
 function getStoredUser(inCallback, outCallback) {
-//     clearUserData()
-    chrome.storage.sync.get(['name', 'nameRoute', 'mapnames', 'binding_1', 'binding_2'], function(response) {
+    var syncArray = ['name', 'nameRoute', 'mapnames', 'modifier'];
+    for (var i = 1; i < maxBindings+1; i ++) {
+        syncArray.push('binding_' + i);
+    }
+    chrome.storage.sync.get(syncArray, function(response) {
         if ('name' in response) {inCallback(response);}
         else {outCallback();}
     });

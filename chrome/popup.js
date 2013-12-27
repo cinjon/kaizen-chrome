@@ -182,6 +182,7 @@ function setUserInfo(response) {
     bgp.setToStorage('name', response.name);
     bgp.setToStorage('nameRoute', response.nameRoute);
     bgp.setToStorage('mapnames', response.mapnames);
+    bgp.setToStorage('modifier', 'ctrlKey');
     for (var key in response) {
         if (key.slice(0,7) == 'binding') {
             bgp.setToStorage(key, response[key]);
@@ -195,8 +196,10 @@ function showLoggedIn(response, callback) {
     bgp.userName = response.name;
     bgp.userNameRoute = response.nameRoute;
     bgp.userMapnames = response.mapnames;
+    bgp.userModifier = response.modifier || 'ctrlKey';
 
     showUsername();
+    showModifier();
     var bindings = {};
     for (var i = 1; i < maxBindings+1; i++) {
         key = 'binding_' + i;
@@ -205,7 +208,7 @@ function showLoggedIn(response, callback) {
         }
     }
     showBindings(bindings, response.mapnames);
-    document.querySelector('#mapChangesSubmit').addEventListener('click', mapChangesHandler);
+    document.querySelector('#modifierChangeSubmit').addEventListener('click', modifierChangeHandler);
     document.querySelector('#userName').addEventListener('click', function() {
         var url = domainName + '/me'
         chrome.tabs.create({url:url});
@@ -225,6 +228,35 @@ function changeDisplay(elementID, display) {
 
 function checkValidInput(input) {
     return (input && input != "");
+}
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function otherModifier(modifier) {
+    if (modifier == 'ctrl') {
+        return 'Alt';
+    } else {
+        return 'Ctrl';
+    }
+}
+
+function showModifier() {
+    $('#modifierCurrent').html(capitalize(bgp.userModifier.slice(0, -3)));
+    $('#modifierChangeSubmit').val(otherModifier(bgp.userModifier.slice(0, -3)))
+}
+
+function modifierChangeHandler() {
+    var modifierButton = $('#modifierChangeSubmit');
+    var modifierCurrent = $('#modifierCurrent');
+    var modifierKey = modifierButton.val();
+    modifierButton.val(modifierCurrent.html());
+    modifierCurrent.html(modifierKey);
+
+    modifierKey = modifierKey.toLowerCase() + 'Key';
+    bgp.userModifier = modifierKey;
+    bgp.setToStorage('modifier', modifierKey);
 }
 
 function mapChangesHandler() {
